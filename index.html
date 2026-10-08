@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#7c6cff"
+    >
+
+    <meta
+        name="description"
+        content="Countdown - compte à rebours pour tous tes événements importants."
+    >
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="icon.png"
+    >
+
+    <title>Countdown</title>
+
+    <style>
+
+        :root {
+            --background: #09090f;
+            --card: #11111a;
+            --card2: #181824;
+            --border: #29293a;
+            --primary: #7c6cff;
+            --primary-light: #9d92ff;
+            --text: #ffffff;
+            --secondary: #b8b8c7;
+            --muted: #777789;
+            --danger: #ff4f61;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #17152b 0%,
+                    var(--background) 48%
+                );
+
+            color: var(--text);
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1200px, 94%);
+            margin: auto;
+            padding: 30px 0 60px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeDown .6s ease;
+        }
+
+        header h1 {
+            margin: 0;
+
+            font-size: 42px;
+            letter-spacing: 2px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    var(--primary-light)
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--secondary);
+            margin-top: 8px;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--card2),
+                    var(--card)
+                );
+
+            border: 1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            margin-bottom: 25px;
+
+            animation: fadeUp .7s ease;
+
+            box-shadow:
+                0 20px 60px rgba(0,0,0,.25);
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            background: var(--primary);
+
+            opacity: .08;
+
+            border-radius: 50%;
+
+            top: -150px;
+            left: -100px;
+
+            filter: blur(30px);
+        }
+
+        .hero-icon {
+            position: relative;
+
+            font-size: 70px;
+
+            animation:
+                floating 3s ease-in-out infinite;
+        }
+
+        .hero h2 {
+            position: relative;
+
+            font-size: 30px;
+
+            margin: 10px 0;
+        }
+
+        .hero-date {
+            position: relative;
+
+            color: var(--secondary);
+        }
+
+        .countdown {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin: 25px 0;
+
+            flex-wrap: wrap;
+        }
+
+        .time-box {
+            background: rgba(255,255,255,.04);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            min-width: 90px;
+
+            padding: 15px 10px;
+
+            transition: .25s;
+        }
+
+        .time-box:hover {
+            transform: translateY(-4px);
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 10px 25px
+                rgba(124,108,255,.12);
+        }
+
+        .time-box strong {
+            display: block;
+
+            font-size: 28px;
+        }
+
+        .time-box span {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .progress-container {
+            max-width: 650px;
+
+            margin: 20px auto 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+
+            height: 10px;
+
+            background: #252535;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            border-radius: 20px;
+
+            transition:
+                width .6s ease;
+        }
+
+        .progress-text {
+            margin-top: 8px;
+
+            color: var(--secondary);
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-section {
+            display: grid;
+
+            grid-template-columns:
+                1fr 220px;
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+
+            animation:
+                fadeUp .8s ease;
+        }
+
+        .search-box,
+        .category-filter {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            color: var(--text);
+
+            padding: 15px 18px;
+
+            outline: none;
+
+            transition: .25s;
+        }
+
+        .search-box::placeholder {
+            color: var(--muted);
+        }
+
+        .search-box:focus,
+        .category-filter:focus {
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(124,108,255,.12);
+        }
+
+        .category-filter {
+            appearance: none;
+
+            cursor: pointer;
+        }
+
+        .category-filter option {
+            background: #151520;
+
+            color: white;
+        }
+
+        .search-info {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: -15px;
+
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           TITRES
+        ========================= */
+
+        .section-title {
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            margin: 25px 0 15px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+        }
+
+        /* =========================
+           EVENTS
+        ========================= */
+
+        .events {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(260px,1fr)
+                );
+
+            gap: 16px;
+        }
+
+        .event-card {
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            transition:
+                transform .25s,
+                border .25s,
+                box-shadow .25s;
+
+            animation:
+                fadeUp .5s ease;
+        }
+
+        .event-card:hover {
+            transform:
+                translateY(-4px);
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 10px 35px
+                rgba(0,0,0,.25);
+        }
+
+        .event-top {
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+        }
+
+        .event-icon {
+            font-size: 42px;
+        }
+
+        .event-actions {
+            display: flex;
+
+            gap: 6px;
+        }
+
+        .icon-button {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid var(--border);
+
+            background:
+                var(--card2);
+
+            color: white;
+
+            transition: .2s;
+        }
+
+        .icon-button:hover {
+            transform:
+                scale(1.08);
+
+            border-color:
+                var(--primary);
+        }
+
+        .delete-button:hover {
+            border-color:
+                var(--danger);
+        }
+
+        .event-card h3 {
+            margin:
+                15px 0 6px;
+
+            font-size: 20px;
+        }
+
+        .event-date {
+            color: var(--secondary);
+
+            font-size: 14px;
+        }
+
+        .event-countdown {
+            margin: 16px 0;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+        .event-progress {
+            height: 6px;
+
+            background: #252535;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .event-progress-fill {
+            height: 100%;
+
+            border-radius: 10px;
+
+            transition:
+                width .5s;
+        }
+
+        .badges {
+            display: flex;
+
+            gap: 6px;
+
+            flex-wrap: wrap;
+
+            margin-top: 14px;
+        }
+
+        .badge {
+            font-size: 11px;
+
+            padding:
+                5px 8px;
+
+            border-radius: 8px;
+
+            background: #222231;
+
+            color: var(--secondary);
+        }
+
+        .category-badge {
+            background:
+                rgba(124,108,255,.15);
+
+            color:
+                var(--primary-light);
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-card {
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            margin-top: 30px;
+        }
+
+        .form-card h2 {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column:
+                1 / -1;
+        }
+
+        .form-group label {
+            color: var(--secondary);
+
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            background:
+                var(--card2);
+
+            border:
+                1px solid var(--border);
+
+            color: white;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color:
+                var(--primary);
+        }
+
+        .form-group input[type="color"] {
+            padding: 4px;
+
+            height: 45px;
+        }
+
+        .checkbox-row {
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .checkbox-row label {
+            display: flex;
+
+            gap: 7px;
+
+            align-items: center;
+
+            color: var(--secondary);
+
+            cursor: pointer;
+        }
+
+        .form-buttons {
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            border: none;
+
+            padding:
+                12px 18px;
+
+            border-radius: 12px;
+
+            color: white;
+
+            transition: .2s;
+        }
+
+        .primary-button {
+            background:
+                var(--primary);
+        }
+
+        .secondary-button {
+            background: #292938;
+        }
+
+        .primary-button:hover,
+        .secondary-button:hover {
+            transform:
+                translateY(-2px);
+
+            filter:
+                brightness(1.1);
+        }
+
+        /* =========================
+           CALENDAR
+        ========================= */
+
+        .calendar-card {
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            margin-top: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .calendar-header button {
+            background:
+                var(--card2);
+
+            border:
+                1px solid var(--border);
+
+            color: white;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(7,1fr);
+
+            gap: 6px;
+        }
+
+        .calendar-day {
+            min-height: 45px;
+
+            padding: 8px;
+
+            background:
+                var(--card2);
+
+            border-radius: 8px;
+
+            font-size: 13px;
+        }
+
+        .calendar-day.has-event {
+            border:
+                1px solid var(--primary);
+        }
+
+        .calendar-day.today {
+            background:
+                var(--primary);
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            grid-column: 1 / -1;
+
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: var(--muted);
+
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 18px;
+        }
+
+        /* =========================
+           NOTIFICATION
+        ========================= */
+
+        .notification-box {
+            position: fixed;
+
+            right: 20px;
+            bottom: 20px;
+
+            background:
+                var(--card2);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding:
+                15px 20px;
+
+            max-width: 320px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0,0,0,.35);
+
+            transform:
+                translateY(150px);
+
+            opacity: 0;
+
+            transition: .4s;
+
+            z-index: 1000;
+        }
+
+        .notification-box.show {
+            transform:
+                translateY(0);
+
+            opacity: 1;
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================= */
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+        @keyframes fadeDown {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-7px);
+            }
+
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: 92%;
+
+                padding-top: 20px;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+
+            .hero {
+                padding:
+                    25px 15px;
+            }
+
+            .hero-icon {
+                font-size: 55px;
+            }
+
+            .hero h2 {
+                font-size: 24px;
+            }
+
+            .time-box {
+                min-width: 70px;
+            }
+
+            .time-box strong {
+                font-size: 22px;
+            }
+
+            .search-section {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .calendar-day {
+                min-height: 38px;
+
+                padding: 5px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+
+        <h1>⏳ Countdown</h1>
+
+        <p>
+            Compte les jours jusqu'à tes événements importants
+        </p>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div
+            id="heroIcon"
+            class="hero-icon"
+        >
+            📅
+        </div>
+
+        <h2 id="heroName">
+            Aucun événement
+        </h2>
+
+        <div
+            id="heroDate"
+            class="hero-date"
+        >
+            Ajoute ton premier événement
+        </div>
+
+        <div
+            id="heroCountdown"
+            class="countdown"
+        ></div>
+
+        <div class="progress-container">
+
+            <div class="progress-bar">
+
+                <div
+                    id="heroProgress"
+                    class="progress-fill"
+                ></div>
+
+            </div>
+
+            <div
+                id="heroProgressText"
+                class="progress-text"
+            >
+                0%
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RECHERCHE -->
+
+    <section>
+
+        <div class="search-section">
+
+            <input
+                id="searchInput"
+                class="search-box"
+                type="text"
+                placeholder="🔎 Rechercher un événement..."
+            >
+
+            <select
+                id="categoryFilter"
+                class="category-filter"
+            >
+
+                <option value="all">
+                    📂 Toutes les catégories
+                </option>
+
+                <option value="Fête">
+                    🎉 Fête
+                </option>
+
+                <option value="Anniversaire">
+                    🎂 Anniversaire
+                </option>
+
+                <option value="École">
+                    🎓 École
+                </option>
+
+                <option value="Vacances">
+                    🏖️ Vacances
+                </option>
+
+                <option value="Gaming">
+                    🎮 Gaming
+                </option>
+
+                <option value="Sport">
+                    🏆 Sport
+                </option>
+
+                <option value="Voyage">
+                    ✈️ Voyage
+                </option>
+
+                <option value="Autre">
+                    📅 Autre
+                </option>
+
+            </select>
+
+        </div>
+
+        <div
+            id="searchInfo"
+            class="search-info"
+        ></div>
+
+    </section>
+
+
+    <!-- EVENTS -->
+
+    <div class="section-title">
+
+        <h2>
+            📅 Mes événements
+        </h2>
+
+    </div>
+
+    <div
+        id="events"
+        class="events"
+    ></div>
+
+
+    <!-- FORMULAIRE -->
+
+    <section class="form-card">
+
+        <h2 id="formTitle">
+            ➕ Ajouter un événement
+        </h2>
+
+        <form id="form">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="eventName">
+                        Nom
+                    </label>
+
+                    <input
+                        id="eventName"
+                        type="text"
+                        placeholder="Ex : Mon anniversaire"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDate">
+                        Date
+                    </label>
+
+                    <input
+                        id="eventDate"
+                        type="date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventIcon">
+                        Icône
+                    </label>
+
+                    <input
+                        id="eventIcon"
+                        type="text"
+                        placeholder="🎂"
+                        maxlength="4"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventCategory">
+                        Catégorie
+                    </label>
+
+                    <select id="eventCategory">
+
+                        <option value="Fête">
+                            🎉 Fête
+                        </option>
+
+                        <option value="Anniversaire">
+                            🎂 Anniversaire
+                        </option>
+
+                        <option value="École">
+                            🎓 École
+                        </option>
+
+                        <option value="Vacances">
+                            🏖️ Vacances
+                        </option>
+
+                        <option value="Gaming">
+                            🎮 Gaming
+                        </option>
+
+                        <option value="Sport">
+                            🏆 Sport
+                        </option>
+
+                        <option value="Voyage">
+                            ✈️ Voyage
+                        </option>
+
+                        <option value="Autre">
+                            📅 Autre
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventColor">
+                        Couleur
+                    </label>
+
+                    <input
+                        id="eventColor"
+                        type="color"
+                        value="#7c6cff"
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <div class="checkbox-row">
+
+                        <label>
+
+                            <input
+                                id="eventRecurring"
+                                type="checkbox"
+                            >
+
+                            🔄 Chaque année
+
+                        </label>
+
+
+                        <label>
+
+                            <input
+                                id="eventFavorite"
+                                type="checkbox"
+                            >
+
+                            ⭐ Favori
+
+                        </label>
+
+
+                        <label>
+
+                            <input
+                                id="eventNotify"
+                                type="checkbox"
+                            >
+
+                            🔔 Notifications
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-buttons">
+
+                <button
+                    id="addButton"
+                    class="primary-button"
+                    type="submit"
+                >
+                    ➕ Ajouter
+                </button>
+
+
+                <button
+                    id="saveButton"
+                    class="primary-button"
+                    type="button"
+                    style="display:none"
+                >
+                    💾 Enregistrer
+                </button>
+
+
+                <button
+                    id="cancelButton"
+                    class="secondary-button"
+                    type="button"
+                    style="display:none"
+                >
+                    Annuler
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- CALENDRIER -->
+
+    <section class="calendar-card">
+
+        <div class="calendar-header">
+
+            <button id="prevMonth">
+                ←
+            </button>
+
+            <h2 id="calendarTitle"></h2>
+
+            <button id="nextMonth">
+                →
+            </button>
+
+        </div>
+
+        <div
+            class="calendar-grid"
+            id="calendar"
+        ></div>
+
+    </section>
+
+</div>
+
+
+<div
+    id="notificationBox"
+    class="notification-box"
+></div>
+
+
+<script>
+
+/* ==========================================
+   DONNÉES
+========================================== */
+
+const defaultEvents = [
+
+    {
+        name: "Halloween",
+        date: "2026-10-31",
+        icon: "🎃",
+        default: true,
+        recurring: true,
+        color: "#ff7b00",
+        category: "Fête"
+    },
+
+    {
+        name: "Noël",
+        date: "2026-12-25",
+        icon: "🎄",
+        default: true,
+        recurring: true,
+        color: "#e63946",
+        category: "Fête"
+    },
+
+    {
+        name: "Nouvel An",
+        date: "2027-01-01",
+        icon: "🎆",
+        default: true,
+        recurring: true,
+        color: "#7c6cff",
+        category: "Fête"
+    },
+
+    {
+        name: "Saint-Valentin",
+        date: "2027-02-14",
+        icon: "❤️",
+        default: true,
+        recurring: true,
+        color: "#ff4f81",
+        category: "Fête"
+    }
+
+];
+
+
+/* ==========================================
+   CHARGEMENT
+========================================== */
+
+let savedEvents =
+    JSON.parse(
+        localStorage.getItem(
+            "countdownEvents"
+        ) || "null"
+    );
+
+
+let events =
+    savedEvents ||
+    defaultEvents.map(
+        event => ({ ...event })
+    );
+
+
+/* ==========================================
+   MIGRATION
+========================================== */
+
+events =
+    events.map(event => ({
+
+        name:
+            event.name ||
+            "Événement",
+
+        date:
+            event.date,
+
+        icon:
+            event.icon ||
+            "📅",
+
+        default:
+            event.default === true,
+
+        recurring:
+            event.recurring === true,
+
+        color:
+            event.color ||
+            "#7c6cff",
+
+        category:
+            event.category ||
+            "Autre",
+
+        favorite:
+            event.favorite === true,
+
+        notify:
+            event.notify === true,
+
+        createdAt:
+            event.createdAt ||
+            new Date().toISOString()
+
+    }));
+
+
+/* ==========================================
+   VARIABLES
+========================================== */
+
+let editingIndex = null;
+
+let calendarDate =
+    new Date();
+
+let searchText = "";
+
+let selectedCategory =
+    "all";
+
+
+/* ==========================================
+   ÉLÉMENTS
+========================================== */
+
+const form =
+    document.getElementById("form");
+
+const formTitle =
+    document.getElementById("formTitle");
+
+const addButton =
+    document.getElementById("addButton");
+
+const saveButton =
+    document.getElementById("saveButton");
+
+const cancelButton =
+    document.getElementById("cancelButton");
+
+const eventName =
+    document.getElementById("eventName");
+
+const eventDate =
+    document.getElementById("eventDate");
+
+const eventIcon =
+    document.getElementById("eventIcon");
+
+const eventColor =
+    document.getElementById("eventColor");
+
+const eventCategory =
+    document.getElementById(
+        "eventCategory"
+    );
+
+const eventRecurring =
+    document.getElementById(
+        "eventRecurring"
+    );
+
+const eventFavorite =
+    document.getElementById(
+        "eventFavorite"
+    );
+
+const eventNotify =
+    document.getElementById(
+        "eventNotify"
+    );
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+const categoryFilter =
+    document.getElementById(
+        "categoryFilter"
+    );
+
+const searchInfo =
+    document.getElementById(
+        "searchInfo"
+    );
+
+
+/* ==========================================
+   SAUVEGARDE
+========================================== */
+
+function saveEvents() {
+
+    localStorage.setItem(
+        "countdownEvents",
+        JSON.stringify(events)
+    );
+
+}
+
+
+/* ==========================================
+   DATE CIBLE
+========================================== */
+
+function getTargetDate(event) {
+
+    const original =
+        new Date(
+            event.date +
+            "T00:00:00"
+        );
+
+    if (!event.recurring) {
+
+        return original;
+
+    }
+
+    const now =
+        new Date();
+
+    let target =
+        new Date(
+            now.getFullYear(),
+            original.getMonth(),
+            original.getDate()
+        );
+
+    if (target < now) {
+
+        target =
+            new Date(
+                now.getFullYear() + 1,
+                original.getMonth(),
+                original.getDate()
+            );
+
+    }
+
+    return target;
+
+}
+
+
+/* ==========================================
+   DIFFÉRENCE
+========================================== */
+
+function getDifference(event) {
+
+    const target =
+        getTargetDate(event);
+
+    const now =
+        new Date();
+
+    let difference =
+        target - now;
+
+    if (difference < 0) {
+
+        difference = 0;
+
+    }
+
+    const days =
+        Math.floor(
+            difference /
+            (1000 * 60 * 60 * 24)
+        );
+
+    const hours =
+        Math.floor(
+            difference /
+            (1000 * 60 * 60)
+        ) % 24;
+
+    const minutes =
+        Math.floor(
+            difference /
+            (1000 * 60)
+        ) % 60;
+
+    const seconds =
+        Math.floor(
+            difference /
+            1000
+        ) % 60;
+
+
+    return {
+        days,
+        hours,
+        minutes,
+        seconds
+    };
+
+}
+
+
+/* ==========================================
+   DATE FRANÇAISE
+========================================== */
+
+function formatDate(date) {
+
+    return new Intl.DateTimeFormat(
+        "fr-FR",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    ).format(date);
+
+}
+
+
+/* ==========================================
+   PROGRESSION
+========================================== */
+
+function getProgress(event) {
+
+    const target =
+        getTargetDate(event);
+
+    let start;
+
+
+    if (event.recurring) {
+
+        start =
+            new Date(
+                target.getFullYear() - 1,
+                target.getMonth(),
+                target.getDate()
+            );
+
+    } else {
+
+        start =
+            new Date(
+                event.createdAt
+            );
+
+        if (
+            isNaN(
+                start.getTime()
+            )
+        ) {
+
+            start =
+                new Date();
+
+        }
+
+    }
+
+
+    const total =
+        target - start;
+
+    const elapsed =
+        new Date() - start;
+
+    let progress =
+        (elapsed / total) * 100;
+
+
+    if (progress < 0)
+        progress = 0;
+
+    if (progress > 100)
+        progress = 100;
+
+
+    return progress;
+
+}
+
+
+/* ==========================================
+   PROCHAIN ÉVÉNEMENT
+========================================== */
+
+function getNextEvent() {
+
+    return [...events]
+        .sort(
+            (a,b) =>
+                getTargetDate(a) -
+                getTargetDate(b)
+        )[0];
+
+}
+
+
+/* ==========================================
+   HERO
+========================================== */
+
+function renderHero() {
+
+    const next =
+        getNextEvent();
+
+    if (!next) {
+
+        return;
+
+    }
+
+
+    document.documentElement
+        .style
+        .setProperty(
+            "--primary",
+            next.color
+        );
+
+
+    document.getElementById(
+        "heroIcon"
+    ).textContent =
+        next.icon;
+
+
+    document.getElementById(
+        "heroName"
+    ).textContent =
+        next.name;
+
+
+    document.getElementById(
+        "heroDate"
+    ).textContent =
+        formatDate(
+            getTargetDate(next)
+        );
+
+
+    const diff =
+        getDifference(next);
+
+
+    document.getElementById(
+        "heroCountdown"
+    ).innerHTML = `
+
+        <div class="time-box">
+            <strong>${diff.days}</strong>
+            <span>Jours</span>
+        </div>
+
+        <div class="time-box">
+            <strong>
+                ${String(diff.hours).padStart(2,"0")}
+            </strong>
+            <span>Heures</span>
+        </div>
+
+        <div class="time-box">
+            <strong>
+                ${String(diff.minutes).padStart(2,"0")}
+            </strong>
+            <span>Minutes</span>
+        </div>
+
+        <div class="time-box">
+            <strong>
+                ${String(diff.seconds).padStart(2,"0")}
+            </strong>
+            <span>Secondes</span>
+        </div>
+
+    `;
+
+
+    const progress =
+        getProgress(next);
+
+
+    document.getElementById(
+        "heroProgress"
+    ).style.width =
+        progress + "%";
+
+
+    document.getElementById(
+        "heroProgressText"
+    ).textContent =
+        Math.round(progress) +
+        "%";
+
+}
+
+
+/* ==========================================
+   RECHERCHE + FILTRE
+========================================== */
+
+function getFilteredEvents() {
+
+    return events.filter(event => {
+
+        const nameMatch =
+            event.name
+                .toLowerCase()
+                .includes(
+                    searchText.toLowerCase()
+                );
+
+
+        const categoryMatch =
+            selectedCategory === "all" ||
+            event.category ===
+            selectedCategory;
+
+
+        return (
+            nameMatch &&
+            categoryMatch
+        );
+
+    });
+
+}
+
+
+/* ==========================================
+   AFFICHAGE
+========================================== */
+
+function renderEvents() {
+
+    const container =
+        document.getElementById(
+            "events"
+        );
+
+    container.innerHTML = "";
+
+
+    const filteredEvents =
+        getFilteredEvents();
+
+
+    searchInfo.textContent =
+        `${filteredEvents.length} événement${
+            filteredEvents.length > 1
+            ? "s"
+            : ""
+        } affiché${
+            filteredEvents.length > 1
+            ? "s"
+            : ""
+        } sur ${events.length}`;
+
+
+    if (
+        filteredEvents.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                🔎
+
+                <br><br>
+
+                Aucun événement trouvé.
+
+                <br><br>
+
+                Essaie une autre recherche
+                ou une autre catégorie.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    filteredEvents
+        .sort(
+            (a,b) =>
+                getTargetDate(a) -
+                getTargetDate(b)
+        )
+        .forEach(event => {
+
+            const index =
+                events.indexOf(event);
+
+            const progress =
+                getProgress(event);
+
+            const diff =
+                getDifference(event);
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "event-card";
+
+
+            card.innerHTML = `
+
+                <div class="event-top">
+
+                    <div class="event-icon">
+                        ${event.icon}
+                    </div>
+
+                    <div class="event-actions">
+
+                        ${
+                            !event.default
+                            ? `
+
+                                <button
+                                    class="icon-button"
+                                    onclick="toggleFavorite(${index})"
+                                >
+                                    ${
+                                        event.favorite
+                                        ? "⭐"
+                                        : "☆"
+                                    }
+                                </button>
+
+                                <button
+                                    class="icon-button"
+                                    onclick="editEvent(${index})"
+                                >
+                                    ✏️
+                                </button>
+
+                                <button
+                                    class="icon-button delete-button"
+                                    onclick="deleteEvent(${index})"
+                                >
+                                    🗑️
+                                </button>
+
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <h3>
+                    ${event.name}
+                </h3>
+
+
+                <div class="event-date">
+
+                    ${formatDate(
+                        getTargetDate(event)
+                    )}
+
+                </div>
+
+
+                <div class="event-countdown">
+
+                    ${
+                        diff.days === 0 &&
+                        diff.hours === 0 &&
+                        diff.minutes === 0 &&
+                        diff.seconds === 0
+
+                        ? "🎉 Aujourd'hui !"
+
+                        :
+
+                        `${diff.days}j
+                        ${String(diff.hours).padStart(2,"0")}h
+                        ${String(diff.minutes).padStart(2,"0")}m
+                        ${String(diff.seconds).padStart(2,"0")}s`
+
+                    }
+
+                </div>
+
+
+                <div class="event-progress">
+
+                    <div
+                        class="event-progress-fill"
+                        style="
+                            width:${progress}%;
+                            background:${event.color};
+                        "
+                    ></div>
+
+                </div>
+
+
+                <div class="badges">
+
+                    <span
+                        class="badge category-badge"
+                    >
+
+                        ${getCategoryEmoji(
+                            event.category
+                        )}
+
+                        ${event.category}
+
+                    </span>
+
+
+                    ${
+                        event.recurring
+                        ?
+                        `<span class="badge">
+                            🔄 Annuel
+                        </span>`
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        event.favorite
+                        ?
+                        `<span class="badge">
+                            ⭐ Favori
+                        </span>`
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        event.notify
+                        ?
+                        `<span class="badge">
+                            🔔 Notification
+                        </span>`
+                        :
+                        ""
+                    }
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+}
+
+
+/* ==========================================
+   CATÉGORIE
+========================================== */
+
+function getCategoryEmoji(category) {
+
+    const emojis = {
+
+        "Fête": "🎉",
+
+        "Anniversaire": "🎂",
+
+        "École": "🎓",
+
+        "Vacances": "🏖️",
+
+        "Gaming": "🎮",
+
+        "Sport": "🏆",
+
+        "Voyage": "✈️",
+
+        "Autre": "📅"
+
+    };
+
+
+    return emojis[category] ||
+        "📅";
+
+}
+
+
+/* ==========================================
+   AJOUT
+========================================== */
+
+form.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const newEvent = {
+
+            name:
+                eventName.value.trim(),
+
+            date:
+                eventDate.value,
+
+            icon:
+                eventIcon.value.trim() ||
+                "📅",
+
+            color:
+                eventColor.value,
+
+            category:
+                eventCategory.value,
+
+            recurring:
+                eventRecurring.checked,
+
+            favorite:
+                eventFavorite.checked,
+
+            notify:
+                eventNotify.checked,
+
+            default:
+                false,
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        if (
+            newEvent.favorite
+        ) {
+
+            events.forEach(
+                item => {
+                    item.favorite =
+                        false;
+                }
+            );
+
+        }
+
+
+        events.push(
+            newEvent
+        );
+
+
+        saveEvents();
+
+        resetForm();
+
+        renderAll();
+
+        showNotification(
+            "✅ Événement ajouté !"
+        );
+
+    }
+);
+
+
+/* ==========================================
+   MODIFICATION
+========================================== */
+
+function editEvent(index) {
+
+    const event =
+        events[index];
+
+
+    if (event.default) {
+
+        showNotification(
+            "🔒 Cet événement ne peut pas être modifié."
+        );
+
+        return;
+
+    }
+
+
+    editingIndex =
+        index;
+
+
+    formTitle.textContent =
+        "✏️ Modifier l'événement";
+
+
+    addButton.style.display =
+        "none";
+
+    saveButton.style.display =
+        "block";
+
+    cancelButton.style.display =
+        "block";
+
+
+    eventName.value =
+        event.name;
+
+    eventDate.value =
+        event.date;
+
+    eventIcon.value =
+        event.icon;
+
+    eventColor.value =
+        event.color;
+
+    eventCategory.value =
+        event.category ||
+        "Autre";
+
+    eventRecurring.checked =
+        event.recurring;
+
+    eventFavorite.checked =
+        event.favorite;
+
+    eventNotify.checked =
+        event.notify;
+
+
+    window.scrollTo({
+
+        top:
+            document.body.scrollHeight,
+
+        behavior:
+            "smooth"
+
+    });
+
+}
+
+
+/* ==========================================
+   ENREGISTREMENT
+========================================== */
+
+saveButton.addEventListener(
+    "click",
+    function() {
+
+        if (
+            editingIndex === null
+        ) {
+
+            return;
+
+        }
+
+
+        const event =
+            events[
+                editingIndex
+            ];
+
+
+        if (
+            eventFavorite.checked
+        ) {
+
+            events.forEach(
+                item => {
+
+                    item.favorite =
+                        false;
+
+                }
+            );
+
+        }
+
+
+        event.name =
+            eventName.value.trim();
+
+        event.date =
+            eventDate.value;
+
+        event.icon =
+            eventIcon.value.trim() ||
+            "📅";
+
+        event.color =
+            eventColor.value;
+
+        event.category =
+            eventCategory.value;
+
+        event.recurring =
+            eventRecurring.checked;
+
+        event.favorite =
+            eventFavorite.checked;
+
+        event.notify =
+            eventNotify.checked;
+
+
+        saveEvents();
+
+        resetForm();
+
+        renderAll();
+
+        showNotification(
+            "💾 Événement modifié !"
+        );
+
+    }
+);
+
+
+/* ==========================================
+   SUPPRESSION
+========================================== */
+
+function deleteEvent(index) {
+
+    if (
+        events[index].default
+    ) {
+
+        showNotification(
+            "🔒 Cet événement ne peut pas être supprimé."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            `Supprimer "${events[index].name}" ?`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    events.splice(
+        index,
+        1
+    );
+
+
+    saveEvents();
+
+    renderAll();
+
+    showNotification(
+        "🗑️ Événement supprimé."
+    );
+
+}
+
+
+/* ==========================================
+   FAVORI
+========================================== */
+
+function toggleFavorite(index) {
+
+    if (
+        events[index].default
+    ) {
+
+        return;
+
+    }
+
+
+    const newState =
+        !events[index].favorite;
+
+
+    events.forEach(
+        event => {
+
+            event.favorite =
+                false;
+
+        }
+    );
+
+
+    events[index].favorite =
+        newState;
+
+
+    saveEvents();
+
+    renderAll();
+
+}
+
+
+/* ==========================================
+   RESET
+========================================== */
+
+function resetForm() {
+
+    editingIndex =
+        null;
+
+
+    form.reset();
+
+
+    eventColor.value =
+        "#7c6cff";
+
+
+    eventCategory.value =
+        "Fête";
+
+
+    formTitle.textContent =
+        "➕ Ajouter un événement";
+
+
+    addButton.style.display =
+        "block";
+
+
+    saveButton.style.display =
+        "none";
+
+
+    cancelButton.style.display =
+        "none";
+
+}
+
+
+/* ==========================================
+   ANNULER
+========================================== */
+
+cancelButton.addEventListener(
+    "click",
+    resetForm
+);
+
+
+/* ==========================================
+   RECHERCHE
+========================================== */
+
+searchInput.addEventListener(
+    "input",
+    function() {
+
+        searchText =
+            this.value.trim();
+
+        renderEvents();
+
+    }
+);
+
+
+/* ==========================================
+   FILTRE
+========================================== */
+
+categoryFilter.addEventListener(
+    "change",
+    function() {
+
+        selectedCategory =
+            this.value;
+
+        renderEvents();
+
+    }
+);
+
+
+/* ==========================================
+   NOTIFICATIONS
+========================================== */
+
+function showNotification(message) {
+
+    const box =
+        document.getElementById(
+            "notificationBox"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () => {
+
+            box.classList.remove(
+                "show"
+            );
+
+        },
+        3000
+    );
+
+}
+
+
+async function requestNotificationPermission() {
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        Notification.permission ===
+        "default"
+    ) {
+
+        await Notification.requestPermission();
+
+    }
+
+}
+
+
+function checkNotifications() {
+
+    events.forEach(event => {
+
+        if (!event.notify) {
+
+            return;
+
+        }
+
+
+        const diff =
+            getDifference(event);
+
+
+        if (
+            diff.days === 7 &&
+            diff.hours === 0 &&
+            diff.minutes === 0
+        ) {
+
+            showNotification(
+                `🔔 ${event.name} arrive dans 7 jours !`
+            );
+
+        }
+
+
+        if (
+            diff.days === 1 &&
+            diff.hours === 0 &&
+            diff.minutes === 0
+        ) {
+
+            showNotification(
+                `🔔 ${event.name} est demain !`
+            );
+
+        }
+
+
+        if (
+            diff.days === 0
+        ) {
+
+            showNotification(
+                `🎉 C'est aujourd'hui : ${event.name} !`
+            );
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================
+   CALENDRIER
+========================================== */
+
+function renderCalendar() {
+
+    const calendar =
+        document.getElementById(
+            "calendar"
+        );
+
+
+    const title =
+        document.getElementById(
+            "calendarTitle"
+        );
+
+
+    calendar.innerHTML =
+        "";
+
+
+    const year =
+        calendarDate.getFullYear();
+
+
+    const month =
+        calendarDate.getMonth();
+
+
+    title.textContent =
+        new Intl.DateTimeFormat(
+            "fr-FR",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        ).format(
+            calendarDate
+        );
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const offset =
+        firstDay === 0
+        ? 6
+        : firstDay - 1;
+
+
+    for (
+        let i = 0;
+        i < offset;
+        i++
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        calendar.appendChild(
+            empty
+        );
+
+    }
+
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const cell =
+            document.createElement(
+                "div"
+            );
+
+
+        cell.className =
+            "calendar-day";
+
+
+        const dateString =
+            `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+
+        const hasEvent =
+            events.some(event => {
+
+                if (
+                    !event.recurring
+                ) {
+
+                    return (
+                        event.date ===
+                        dateString
+                    );
+
+                }
+
+
+                const original =
+                    new Date(
+                        event.date +
+                        "T00:00:00"
+                    );
+
+
+                return (
+                    original.getMonth() ===
+                        month &&
+
+                    original.getDate() ===
+                        day
+                );
+
+            });
+
+
+        if (hasEvent) {
+
+            cell.classList.add(
+                "has-event"
+            );
+
+        }
+
+
+        const today =
+            new Date();
+
+
+        if (
+
+            today.getFullYear() ===
+                year &&
+
+            today.getMonth() ===
+                month &&
+
+            today.getDate() ===
+                day
+
+        ) {
+
+            cell.classList.add(
+                "today"
+            );
+
+        }
+
+
+        cell.textContent =
+            day;
+
+
+        calendar.appendChild(
+            cell
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   MOIS PRÉCÉDENT
+========================================== */
+
+document.getElementById(
+    "prevMonth"
+).addEventListener(
+    "click",
+    function() {
+
+        calendarDate.setMonth(
+            calendarDate.getMonth() - 1
+        );
+
+        renderCalendar();
+
+    }
+);
+
+
+/* ==========================================
+   MOIS SUIVANT
+========================================== */
+
+document.getElementById(
+    "nextMonth"
+).addEventListener(
+    "click",
+    function() {
+
+        calendarDate.setMonth(
+            calendarDate.getMonth() + 1
+        );
+
+        renderCalendar();
+
+    }
+);
+
+
+/* ==========================================
+   CONFETTIS
+========================================== */
+
+function launchConfetti() {
+
+    for (
+        let i = 0;
+        i < 70;
+        i++
+    ) {
+
+        const confetti =
+            document.createElement(
+                "div"
+            );
+
+
+        confetti.style.position =
+            "fixed";
+
+
+        confetti.style.width =
+            "8px";
+
+
+        confetti.style.height =
+            "8px";
+
+
+        confetti.style.left =
+            Math.random() * 100 +
+            "%";
+
+
+        confetti.style.top =
+            "-10px";
+
+
+        confetti.style.background =
+            [
+                "#7c6cff",
+                "#9d92ff",
+                "#ff4f81",
+                "#ffcc00",
+                "#00d4ff"
+            ][
+                Math.floor(
+                    Math.random() * 5
+                )
+            ];
+
+
+        confetti.style.zIndex =
+            "9999";
+
+
+        confetti.style.transform =
+            `rotate(
+                ${Math.random() * 360}deg
+            )`;
+
+
+        document.body.appendChild(
+            confetti
+        );
+
+
+        const animation =
+            confetti.animate(
+
+                [
+
+                    {
+                        transform:
+                            "translateY(0) rotate(0deg)",
+
+                        opacity: 1
+                    },
+
+                    {
+
+                        transform:
+                            `translateY(
+                                ${window.innerHeight + 100}px
+                            )
+                            rotate(720deg)`,
+
+                        opacity: 0
+
+                    }
+
+                ],
+
+                {
+
+                    duration:
+                        2500 +
+                        Math.random() * 2000,
+
+                    easing:
+                        "cubic-bezier(.2,.7,.3,1)"
+
+                }
+
+            );
+
+
+        animation.onfinish =
+            () => {
+
+                confetti.remove();
+
+            };
+
+    }
+
+}
+
+
+/* ==========================================
+   JOUR J
+========================================== */
+
+function checkToday() {
+
+    const today =
+        new Date();
+
+
+    events.forEach(event => {
+
+        const target =
+            getTargetDate(event);
+
+
+        if (
+
+            target.getFullYear() ===
+                today.getFullYear() &&
+
+            target.getMonth() ===
+                today.getMonth() &&
+
+            target.getDate() ===
+                today.getDate()
+
+        ) {
+
+            const key =
+                `confetti-${event.name}-${today.toDateString()}`;
+
+
+            if (
+                !localStorage.getItem(key)
+            ) {
+
+                launchConfetti();
+
+
+                localStorage.setItem(
+                    key,
+                    "true"
+                );
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================
+   PWA
+========================================== */
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        () => {
+
+            navigator.serviceWorker
+                .register("./sw.js")
+                .then(
+                    registration => {
+
+                        console.log(
+                            "✅ Countdown PWA activée",
+                            registration
+                        );
+
+                    }
+                )
+                .catch(
+                    error => {
+
+                        console.error(
+                            "❌ Erreur PWA :",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   RENDU
+========================================== */
+
+function renderAll() {
+
+    renderHero();
+
+    renderEvents();
+
+    renderCalendar();
+
+}
+
+
+function updateLive() {
+
+    renderHero();
+
+    renderEvents();
+
+}
+
+
+/* ==========================================
+   LANCEMENT
+========================================== */
+
+renderAll();
+
+checkToday();
+
+checkNotifications();
+
+
+setInterval(
+    updateLive,
+    1000
+);
+
+
+setInterval(
+    checkNotifications,
+    60000
+);
+
+
+setInterval(
+    checkToday,
+    60000
+);
+
+
+/* ==========================================
+   PERMISSION NOTIFICATION
+========================================== */
+
+eventNotify.addEventListener(
+    "change",
+    function() {
+
+        if (this.checked) {
+
+            requestNotificationPermission();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
